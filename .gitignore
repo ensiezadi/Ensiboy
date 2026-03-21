@@ -36,3 +36,23 @@ build/
 
 ### Mac OS ###
 .DS_Store
+.env
+
+# Maven 构建输出
+/target/
+
+# IDE 配置
+/.idea/
+/*.iml
+
+# Node / 前端
+/src/main/resources/xiaozhi-ui/node_modules/
+/src/main/resources/xiaozhi-ui/dist/
+
+# Docker 挂载出来的数据库数据目录（很关键）
+/data/mysql/
+/data/mongo/
+
+# 操作系统杂项
+.DS_Store
+Thumbs.db

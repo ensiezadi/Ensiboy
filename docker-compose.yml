@@ -1,0 +1,56 @@
+services:
+  # 1. MySQL 数据库
+  mysql-db:
+    image: mysql:8.0
+    container_name: ensi-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456        # 和 application.properties 保持一致
+      MYSQL_DATABASE: xiaozhi            # 和 application.properties 的库名一致
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+
+
+  # 2. MongoDB 数据库
+  mongo-db:
+    image: mongo:latest
+    container_name: ensi-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
+
+  # 3. Java 后端应用
+  java-app:
+    build: .
+    container_name: ensi-app
+    ports:
+      - "7777:7777"
+    depends_on:
+      - mysql-db
+      - mongo-db
+    environment:
+      # 这里的变量会自动从上面的 .env 文件中读取
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - LANGCHAIN4J_COMMUNITY_DASHSCOPE_EMBEDDING_MODEL_API_KEY=${DASHSCOPE_API_KEY}
+      - LANGCHAIN4J_COMMUNITY_DASHSCOPE_STREAMING_CHAT_MODEL_API_KEY=${DASHSCOPE_API_KEY}
+      # 容器间通信地址修改
+      - SPRING_DATA_MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo-db:27017/chat_memory_db?authSource=admin
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/xiaozhi?useSSL=false&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+
+    # 4. 前端应用（新加）
+  frontend:
+    build:
+      context: ./src/main/resources/xiaozhi-ui
+      dockerfile: Dockerfile   # 就是你刚才在 xiaozhi-ui 下新建的那个
+    container_name: ensi-frontend
+    ports:
+      - "5173:80"   # 宿主 5173 映射到容器 80，访问 http://localhost:5173
+    depends_on:
+      - java-app

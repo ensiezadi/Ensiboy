@@ -22,8 +22,8 @@ public class EmbeddingStoreConfig {
                 .index("xiaozhi-index") // 如果指定索引不存在，将创建新索引
                 .nameSpace("xiaozhi-namespace") // 如果命名空间不存在，将自动创建
                 .createIndex(PineconeServerlessIndexConfig.builder()
-                        .cloud("gcp")
-                        .region("us-central1")
+                        .cloud("AWS")
+                        .region("us-east-1")
                         .dimension(embeddingModel.dimension())
                         .build())
                 .build();

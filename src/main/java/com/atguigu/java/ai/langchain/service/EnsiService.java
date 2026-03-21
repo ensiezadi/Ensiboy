@@ -1,4 +1,8 @@
 package com.atguigu.java.ai.langchain.service;
 
-public class EnsiService {
+import com.atguigu.java.ai.langchain.entity.Appointment;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+public interface EnsiService extends IService<Appointment> {
+    public Appointment getOne(Appointment appointment);
 }

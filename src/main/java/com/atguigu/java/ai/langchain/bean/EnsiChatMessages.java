@@ -8,12 +8,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document("chat_messages")
-public class ChatMessages {
+public class EnsiChatMessages {
 
     @Id
     private ObjectId messageId;
 
-    private MemoryId memoryId;
+    private Integer memoryId;
 
     private String content;
 
