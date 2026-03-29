@@ -8,7 +8,7 @@
       active-text-color="#ffd04b"
       background-color="#545c64"
       text-color="#fff"
-      :default-active="activeMenu"
+      :default-active="router.currentRoute.value.path"
       :collapse="collapsed"
       :collapse-transition="false"
       class="el-menu-vertical-demo"
@@ -48,7 +48,7 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
   hidden?: boolean;
@@ -62,9 +62,6 @@ const logoSrc =
   "https://cdn.jsdelivr.net/gh/ensiezadi/obsidian-images/images/%E4%BB%93%E5%BA%93.png";
 
 const router = useRouter();
-const route = useRoute();
-
-const activeMenu = computed(() => route.path);
 
 const menuList = computed(() => {
   const allRoutes = router.options.routes;

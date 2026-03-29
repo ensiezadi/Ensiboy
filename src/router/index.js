@@ -1,16 +1,33 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import backendLayout from '@/components/backendLayout.vue'
+import BackendLayout from '@/components/BackendLayout.vue'
+import AuthLayout from '@/components/AuthLayout.vue'
 
 const backend = [
     {
         path: '/',
-        redirect: '/backend/dashboard'
+        redirect: '/frontend'
+    },
+    {
+        path: '/frontend',
+        component: () => import('@/views/front.vue'),
+        meta: {
+            title: 'home',
+            icon: 'House'
+        }
+    },
+    {
+        path: '/login',
+        redirect: '/auth/login'
+    },
+    {
+        path: '/register',
+        redirect: '/auth/register'
     },
     {
         path: '/backend',
         name: 'backend',
         // redirect: '/backend/dashboard',
-        component: backendLayout,
+        component: BackendLayout,
         children: [
             {
                 path: '',
@@ -45,6 +62,29 @@ const backend = [
                 component: () => import('@/views/query.vue'),
                 meta: {
                     title: 'help records',
+                    icon: 'Message'
+                }
+            }
+        ]
+    },
+    {
+        path: '/auth',
+        redirect: '/auth/login',
+        component: AuthLayout,
+        children: [
+            {
+                path: 'login',
+                component: () => import('@/views/login.vue'),
+                meta: {
+                    title: 'login',
+                    icon: 'Message'
+                }
+            },
+            {
+                path: 'register',
+                component: () => import('@/views/register.vue'),
+                meta: {
+                    title: 'register',
                     icon: 'Message'
                 }
             }

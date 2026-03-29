@@ -3,15 +3,15 @@
     <el-container class="layout-container">
       <el-header class="layout-header">
         <BackendMainBar
-          :sidebar-hidden="sidebarHidden"
-          :sidebar-collapsed="sidebarCollapsed"
+          :sidebar-hidden="sidebarStore.isHidden"
+          :sidebar-collapsed="sidebarStore.isCollapsed"
           @cycle-sidebar="cycleSidebar"
         />
       </el-header>
       <el-container class="layout-body">
         <BackendSideBar
-          :hidden="sidebarHidden"
-          :collapsed="sidebarCollapsed"
+          :hidden="sidebarStore.isHidden"
+          :collapsed="sidebarStore.isCollapsed"
           @toggle-collapse="toggleSidebarCollapse"
         />
         <el-main class="layout-main">
@@ -26,33 +26,19 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import BackendMainBar from "./BackendMainBar.vue";
 import BackendSideBar from "./BackendSideBar.vue";
 import BackendEndBar from "./BackendEndBar.vue";
+import { useSidebarStore } from "@/stores/sidebar";
 
-const sidebarHidden = ref(false);
-const sidebarCollapsed = ref(false);
+const sidebarStore = useSidebarStore();
 
 const cycleSidebar = () => {
-  if (!sidebarHidden.value && !sidebarCollapsed.value) {
-    sidebarCollapsed.value = true;
-    return;
-  }
-
-  if (!sidebarHidden.value && sidebarCollapsed.value) {
-    sidebarHidden.value = true;
-    sidebarCollapsed.value = false;
-    return;
-  }
-
-  sidebarHidden.value = false;
-  sidebarCollapsed.value = false;
+  sidebarStore.cycleMode();
 };
 
 const toggleSidebarCollapse = () => {
-  sidebarHidden.value = false;
-  sidebarCollapsed.value = !sidebarCollapsed.value;
+  sidebarStore.toggleCollapsedMode();
 };
 </script>
 
