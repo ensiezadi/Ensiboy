@@ -39,11 +39,12 @@
 
 <script setup>
 import { reactive } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { login } from "@/api/admin";
 
 const router = useRouter();
+const route = useRoute();
 
 const form = reactive({
   username: "",
@@ -85,6 +86,12 @@ const handleLogin = async () => {
       JSON.stringify({ username: form.username, ...userInfo }),
     );
     ElMessage.success(payload.message || "登录成功");
+
+    const redirect = String(route.query.redirect || "");
+    if (redirect && redirect.startsWith("/") && !redirect.startsWith("/auth")) {
+      router.push(redirect);
+      return;
+    }
 
     if (userType === "2") {
       router.push("/backend/dashboard");

@@ -37,7 +37,7 @@ const backend = [
                 path: 'dashboard',
                 component: () => import('@/views/dashboard.vue'),
                 meta: {
-                    title: 'dashboard',
+                    title: '📊 数据分析',
                     icon: 'Notification'
                 }
             },
@@ -45,7 +45,7 @@ const backend = [
                 path: 'history',
                 component: () => import('@/views/history.vue'),
                 meta: {
-                    title: 'history views',
+                    title: '😊 情绪日记',
                     icon: 'Aim'
                 }
             },
@@ -53,7 +53,7 @@ const backend = [
                 path: 'knowledge',
                 component: () => import('@/views/knowledge.vue'),
                 meta: {
-                    title: 'knowledge',
+                    title: '💡 知识库',
                     icon: 'ChatSquare'
                 }
             },
@@ -61,7 +61,7 @@ const backend = [
                 path: 'query',
                 component: () => import('@/views/query.vue'),
                 meta: {
-                    title: 'help records',
+                    title: '📞 咨询记录',
                     icon: 'Message'
                 }
             }
@@ -95,6 +95,51 @@ const backend = [
 const router = createRouter({
     history: createWebHistory(),
     routes: backend
+})
+
+function getStoredUser() {
+    try {
+        const raw = localStorage.getItem('user')
+        return raw ? JSON.parse(raw) : {}
+    } catch (_error) {
+        return {}
+    }
+}
+
+function isAdminUser(user) {
+    const userType = String(user?.userType ?? '')
+    const role = String(user?.role ?? '').toLowerCase()
+    return userType === '2' || role === 'admin' || role === 'administrator'
+}
+
+router.beforeEach((to, _from, next) => {
+    const token = localStorage.getItem('token')
+    const currentUser = getStoredUser()
+    const isBackendRoute = to.path.startsWith('/backend')
+    const isAuthRoute = to.path.startsWith('/auth')
+
+    if (isBackendRoute && !token) {
+        const redirect = encodeURIComponent(to.fullPath || '/backend/knowledge')
+        next(`/auth/login?redirect=${redirect}`)
+        return
+    }
+
+    if (isBackendRoute && token && !isAdminUser(currentUser)) {
+        next('/frontend')
+        return
+    }
+
+    if (isAuthRoute && token) {
+        const redirect = typeof to.query.redirect === 'string' ? to.query.redirect : ''
+        if (redirect && redirect.startsWith('/') && !redirect.startsWith('/auth')) {
+            next(redirect)
+            return
+        }
+        next(isAdminUser(currentUser) ? '/backend/dashboard' : '/frontend')
+        return
+    }
+
+    next()
 })
 
 export default router

@@ -29,11 +29,13 @@
       :default-active="activeIndex"
       @select="handleSelect"
     >
-      <el-menu-item index="dashboard">处理器</el-menu-item>
-      <el-menu-item index="model">模型</el-menu-item>
-      <el-menu-item index="dataset">数据集</el-menu-item>
-      <el-menu-item index="train">训练</el-menu-item>
-      <el-menu-item index="eval">评测</el-menu-item>
+      <el-menu-item
+        v-for="item in navItems"
+        :key="item.index"
+        :index="item.index"
+      >
+        {{ item.label }}
+      </el-menu-item>
     </el-menu>
 
     <div class="user-info">
@@ -58,6 +60,8 @@
 
 <script setup>
 import { computed, ref } from "vue";
+import { ElMessage } from "element-plus";
+import { useRoute, useRouter } from "vue-router";
 
 const props = defineProps({
   sidebarHidden: {
@@ -71,6 +75,15 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["cycle-sidebar"]);
+const route = useRoute();
+const router = useRouter();
+
+const navItems = [
+  { index: "/backend/dashboard", label: "数据分析" },
+  { index: "/backend/history", label: "情绪日记" },
+  { index: "/backend/knowledge", label: "知识库" },
+  { index: "/backend/query", label: "咨询记录" },
+];
 
 const controlText = computed(() => {
   if (props.sidebarHidden) {
@@ -82,32 +95,54 @@ const controlText = computed(() => {
   return "折叠图标";
 });
 
-const activeIndex = ref("dashboard");
+const activeIndex = computed(() => {
+  const currentPath = route.path;
+  const activeItem = navItems.find((item) =>
+    currentPath.startsWith(item.index),
+  );
+  return activeItem?.index || "/backend/dashboard";
+});
 const username = ref("管理员");
 
-const logoSrc =
-  "https://cdn.jsdelivr.net/gh/ensiezadi/obsidian-images/images/%E4%BB%93%E5%BA%93.png";
-const avatarUrl = "https://i.pravatar.cc/100?img=12";
+// const logoSrc =
+// "https://cdn.jsdelivr.net/gh/ensiezadi/obsidian-images/images/%E4%BB%93%E5%BA%93.png";
+const avatarUrl = "/p1.jpg";
+
+const logoSrc = "/logo.png";
 
 const handleSelect = (index) => {
-  activeIndex.value = index;
+  router.push(index);
 };
 
 const handleCommand = (command) => {
-  console.log("user command:", command);
+  if (command === "logout") {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    ElMessage.success("已退出登录");
+    router.push("/auth/login");
+    return;
+  }
+
+  if (command === "profile") {
+    ElMessage.info("个人中心功能开发中");
+    return;
+  }
+
+  ElMessage.info("设置功能开发中");
 };
 </script>
 
 <style lang="scss" scoped>
 .backend-main-bar {
-  height: 100%; /* 继承 Header 的高度 */
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  background-color: #fff;
-  border-bottom: 1px solid #e4e7ed;
+  background: linear-gradient(120deg, #0f1b34 0%, #1a2f5d 55%, #1b3e73 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   box-sizing: border-box;
+  color: #eaf0ff;
 }
 
 .brand-container {
@@ -117,52 +152,31 @@ const handleCommand = (command) => {
   min-width: 360px;
 }
 
-.sidebar-control {
-  margin-left: 12px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px dashed #cdd0d6;
-  color: #606266;
-  font-size: 12px;
-  line-height: 1;
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #409eff;
-    color: #409eff;
-    background-color: #ecf5ff;
-  }
-}
-
-/* 移除旧的 .sidebar-control 样式，替换为以下内容 */
 .sidebar-control-btn {
   margin-left: 12px;
-
-  /* 如果想要图片中那种极简的浅灰色效果，可以进行如下微调 */
-  background-color: #f4f4f5 !important;
-  border-color: #e9e9eb !important;
-  color: #909399 !important;
-  font-weight: normal;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  color: #eaf0ff !important;
+  font-weight: 500;
+  backdrop-filter: blur(6px);
 
   &:hover {
-    background-color: #ecf5ff !important;
-    border-color: #409eff !important;
-    color: #409eff !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+    color: #ffffff !important;
   }
 
   &:active {
-    background-color: #d9ecff !important;
+    background: rgba(255, 255, 255, 0.16) !important;
   }
 }
 
 .brand-logo {
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-right: 10px;
+  box-shadow: 0 6px 18px rgba(7, 15, 35, 0.35);
 }
 
 .image-slot {
@@ -174,31 +188,60 @@ const handleCommand = (command) => {
   justify-content: center;
   font-size: 12px;
   color: #fff;
-  background-color: #409eff;
+  background: linear-gradient(135deg, #46d6ff 0%, #5d7dff 100%);
 }
 
 .brand-name {
   margin: 0;
   font-size: 16px;
   line-height: 1.2;
-  color: #303133;
+  color: #f3f6ff;
+  letter-spacing: 0.3px;
 }
 
 .brand-desc {
   margin: 2px 0 0;
   font-size: 12px;
-  color: #909399;
+  color: rgba(233, 240, 255, 0.72);
 }
 
 .top-nav {
   flex: 1;
   border-bottom: none;
-  min-width: 320px;
+  min-width: 360px;
   margin: 0 12px;
+  background: transparent;
+}
+
+:deep(.top-nav.el-menu--horizontal > .el-menu-item) {
+  height: 60px;
+  line-height: 60px;
+  color: rgba(233, 240, 255, 0.78);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+:deep(.top-nav.el-menu--horizontal > .el-menu-item:hover) {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+:deep(.top-nav.el-menu--horizontal > .el-menu-item.is-active) {
+  color: #ffffff;
+  border-bottom-color: #67d7ff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+:deep(.top-nav.el-menu--horizontal) {
+  border-bottom: none;
+}
+
+:deep(.top-nav.el-menu) {
+  background: transparent;
 }
 
 .user-info {
-  min-width: 120px;
+  min-width: 140px;
   display: flex;
   justify-content: flex-end;
 }
@@ -206,11 +249,30 @@ const handleCommand = (command) => {
 .el-dropdown-link {
   display: inline-flex;
   align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
   cursor: pointer;
-  color: #303133;
+  color: #f5f8ff;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
 }
 
 .avatar {
   margin-right: 8px;
+}
+
+@media (max-width: 1200px) {
+  .brand-desc {
+    display: none;
+  }
+
+  .brand-container {
+    min-width: 300px;
+    width: 300px;
+  }
 }
 </style>
