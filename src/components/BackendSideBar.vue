@@ -9,7 +9,7 @@
         <div class="brand-logo-wrapper">
           <el-image :src="logoSrc" alt="logo" class="brand-logo" fit="cover">
             <template #error>
-              <div class="image-slot">💭</div>
+              <div class="image-slot">AI</div>
             </template>
           </el-image>
           <div v-show="!collapsed" class="logo-online-indicator"></div>
@@ -71,8 +71,7 @@ const emit = defineEmits(["toggle-collapse"]);
 
 const collapsed = computed(() => !!props.collapsed);
 
-const logoSrc =
-  "https://cdn.jsdelivr.net/gh/ensiezadi/obsidian-images/images/%E4%BB%93%E5%BA%93.png";
+const logoSrc = "/logo.png";
 
 const router = useRouter();
 

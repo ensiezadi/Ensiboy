@@ -103,9 +103,6 @@ const activeIndex = computed(() => {
   return activeItem?.index || "/backend/dashboard";
 });
 const username = ref("管理员");
-
-// const logoSrc =
-// "https://cdn.jsdelivr.net/gh/ensiezadi/obsidian-images/images/%E4%BB%93%E5%BA%93.png";
 const avatarUrl = "/p1.jpg";
 
 const logoSrc = "/logo.png";
